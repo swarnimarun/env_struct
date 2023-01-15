@@ -20,7 +20,7 @@ use env_struct::env_struct;
 env_struct! {
     #[derive(Debug)] // (Optional) Not needed, just to
     //  show that we keep derive & other macros intact
-    pub struct ConfigEnv { // vis modifiers work too
+    pub struct ConfigEnvWithDefault { // vis modifiers work too
         // Will use `CONFIG_PATH`
         pub config_path = "/path/to/config.toml", 
         // Will use `RESULT_PATH`
@@ -29,7 +29,40 @@ env_struct! {
 }
 
 pub fn main() {
-    let env_config = ConfigEnv::load_from_env();
+    let env_config = ConfigEnvWithDefault::load_from_env();
+
+    if let Some(s) = entry_point(&env_config) {
+        eprintln!("Program exited successfullly!");
+        post_run_operations(&env_config);
+        // we don't care if the post run operations
+        // such as cleanup or such fail.
+    } else {
+        eprintln!("Program exit status invalid!");
+        std::process::exit(1);
+    }
+}
+```
+
+Or for config where you want to ensure you have env setup,
+```rust
+use env_struct::env_struct;
+
+env_struct! {
+    #[derive(Debug)] // (Optional) Not needed, just to
+    //  show that we keep derive & other macros intact
+    pub struct RequiredConfigEnv { // vis modifiers work too
+        // Will use `CONFIG_PATH`
+        pub config_path, 
+        // Will use `RESULT_PATH`
+        pub result_path,
+    }
+}
+
+
+pub fn main() {
+    // Result<RequiredConfigEnv, String>
+    // Error: String above will name the var that couldn't be read.
+    let env_config = RequiredConfigEnv::try_load_from_env().unwrap();
 
     if let Some(s) = entry_point(&env_config) {
         eprintln!("Program exited successfullly!");

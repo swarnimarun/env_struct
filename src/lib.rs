@@ -74,6 +74,45 @@ macro_rules! env_struct {
             }
         }
     };
+    (
+        $(#[$outer:meta])*
+        $vis:vis struct $struct_name:ident {
+            $(
+                $(#[$outer_field:meta])*
+                $vis_ident:vis $field:ident,
+            )*
+        }
+    ) => {
+        $(#[$outer])*
+        $vis struct $struct_name {
+            $(
+                $(#[$outer_field])*
+                $vis_ident $field: String,
+            )*
+        }
+        impl $struct_name {
+            pub fn try_load_from_env() -> Result<Self, String> {
+                Ok(Self {
+                    $(
+                        $field: std::env::var(
+                            stringify!($field)
+                                .chars()
+                                .map(|x| char::to_ascii_uppercase(&x))
+                                .collect::<String>(),
+                        ).map_err(|_| {
+                            format!(
+                                "Environment Variable `{}` Not Present!",
+                                stringify!($field)
+                                    .chars()
+                                    .map(|x| char::to_ascii_uppercase(&x))
+                                    .collect::<String>()
+                            )
+                        })?,
+                    )*
+                })
+            }
+        }
+    };
 }
 
 #[cfg(test)]
@@ -105,7 +144,27 @@ mod tests {
     }
 
     #[test]
-    fn test() {
+    fn test_with_default() {
+        let hello_world = "Hello, world!";
+        let temp_env = [
+            EnvTemp::set_var("HELLO_NOT_MY_WORLD", hello_world),
+        ];
+        env_struct! {
+            /// Env Items
+            struct Env {
+                /// Hello World
+                hello_not_my_world = "hello".into(),
+                hello_some_world = "Hello, Some World!",
+            }
+        }
+        let env = Env::load_from_env();
+        assert_eq!(env.hello_not_my_world, hello_sam);
+        assert_eq!(env.hello_some_world, "Hello, Some World!");
+        drop(temp_env); // drop would be called without this as well
+    }
+
+    #[test]
+    fn test_no_defaults_succeed() {
         let hello_sam = "Hello, Sam!";
         let welp_sam = "Welp, Sam!";
         let temp_env = [
@@ -114,15 +173,34 @@ mod tests {
         ];
         env_struct! {
             /// Env Items
-            struct Env {
+            struct Env2 {
                 /// Hello World
-                hello_world = "hello".into(),
-                welp_my_world = "welp".into(),
-            }    
+                hello_world,
+                welp_my_world,
+            }
         }
-        let env = Env::load_from_env();
+        let env = Env2::try_load_from_env().unwrap();
         assert_eq!(env.hello_world, hello_sam);
         assert_eq!(env.welp_my_world, welp_sam);
+        drop(temp_env); // drop would be called without this as well
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_no_defaults_failed() {
+        let welp_sam = "Welp, Sam!";
+        let temp_env = [
+            EnvTemp::set_var("HELL_TO_WORLD", welp_sam)
+        ];
+        env_struct! {
+            struct Env {
+                hell_to_world,
+                welp_world,
+            }
+        }
+        let env = Env::try_load_from_env().unwrap();
+        _ = env.hell_to_world;
+        _ = env.welp_world;
         drop(temp_env); // drop would be called without this as well
     }
 }
