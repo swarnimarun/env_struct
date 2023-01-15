@@ -1,33 +1,35 @@
-/// Environment variable struct for better env management.
-///
-/// Currently it's very opinionated and depends on having
-/// `std` as it's fields defaults to `String` type, and
-/// uses `std::env::var(<key>)`.
-///
-/// You are also forced to specify a default-value for the
-/// `ENV_VARIABLE` because IMHO that's important.
-///
-/// Also lastly we just capitalize the field name for
-/// env_variable name so make sure to set those up correctly.
-///
-/// Key roadmap goal is,
-/// Support custom aliases for env_var key.
-///
-/// Note we don't support boolean or enum based env
-/// variables yet, I hope to shortly but I don't really
-/// need that so haven't thought about it much yet!
-///
-/// Usage
-/// ```rust
-/// use env_struct::env_struct;
-/// env_struct!{
-///     #[derive(Debug)]
-///     pub struct DummyEnv {
-///         pub path_to_something = "/path_to_something".into(),
-///         pub config_path = "/folder/config_path.toml".into(),
-///     }
-/// };
-/// ```
+//! Environment variable struct for better env management.
+//!
+//! Currently it's very opinionated and depends on having
+//! `std` as it's fields defaults to `String` type, and
+//! uses `std::env::var(<key>)`.
+//!
+//! You are also forced to specify a default-value for the
+//! `ENV_VARIABLE` because IMHO that's important.
+//!
+//! Also lastly we just capitalize the field name for
+//! env_variable name so make sure to set those up correctly.
+//!
+//! Key roadmap goal is,
+//! Support custom aliases for env_var key.
+//!
+//! Note we don't support boolean or enum based env
+//! variables yet, I hope to shortly but I don't really
+//! need that so haven't thought about it much yet!
+//!
+//! ### Usage
+//! ```rust
+//! use env_struct::env_struct;
+//! env_struct!{
+//!     #[derive(Debug)]
+//!     pub struct DummyEnv {
+//!         pub path_to_something = "/path_to_something".into(),
+//!         pub config_path = "/folder/config_path.toml".into(),
+//!     }
+//! };
+//! ```
+
+/// Macro for writing a `env_struct`
 #[macro_export]
 macro_rules! env_struct {
     (
