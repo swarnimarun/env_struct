@@ -1,4 +1,8 @@
-## env_struct
+# env_struct
+
+[![docs.rs/env-struct](https://img.shields.io/docsrs/env_struct)](https://docs.rs/env-struct)
+[![crates.io/crates/env-struct](https://buildstats.info/crate/env-struct)](https://crates.io/crates/env-struct)
+
 
 This crate is very opinionated env management crate for
 building good env management habits and avoiding global variables
@@ -8,15 +12,6 @@ Can still be used with `lazy_init` to load the struct as a
 global static. But that isn't baked into this. In future one should
 be able to use the new lazy `once_cell` in API in rust_std once
 it gets stablized.
-
-Environment variable structs are a better for env management.
-
-As then you can ensure the nature of sync on top of env on your own,
-and don't have to pay the cost of `Atomic`s without needing to use them
-in your single threaded application.
-
-Also this works better when your system already has a context provider,
-for dependency injection, for instance, in a GUI application.
 
 A quick example of usage looks like,
 ```rust
@@ -47,6 +42,19 @@ pub fn main() {
     }
 }
 ```
+
+## My Opinions
+
+Environment variable structs are a better for env management.
+
+As then you can ensure the nature of sync on top of env on your own,
+and don't have to pay the cost of `Atomic`s without needing to use them
+in your single threaded application.
+
+Also this works better when your system already has a context provider,
+for dependency injection, for instance, in a GUI application.
+
+And, defaults should always exist if only to inform the user of the lack of configuration.
 
 ## Roadmap
 - Support custom aliases for env_var key.
