@@ -34,6 +34,7 @@ macro_rules! env_struct {
         $(#[$outer:meta])*
         $vis:vis struct $struct_name:ident {
             $(
+                $(#[$outer_field:meta])*
                 $vis_ident:vis $field:ident = $fieldDef:expr,
             )*
         }
@@ -41,6 +42,7 @@ macro_rules! env_struct {
         $(#[$outer])*
         $vis struct $struct_name {
             $(
+                $(#[$outer_field])*
                 $vis_ident $field: String,
             )*
         }
@@ -109,7 +111,9 @@ mod tests {
             EnvTemp::set_var("WELP_MY_WORLD", welp_sam),
         ];
         env_struct! {
+            /// Env Items
             struct Env {
+                /// Hello World
                 hello_world = "hello".into(),
                 welp_my_world = "welp".into(),
             }    

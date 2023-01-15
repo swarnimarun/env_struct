@@ -1,7 +1,7 @@
 [package]
 name = "env_struct"
 description = "A better and simpler way to handle env."
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 author = "Swarnim Arun <mail@swarnimarun.com>"
 license = "MIT"
