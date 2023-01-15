@@ -1,0 +1,16 @@
+[package]
+name = "env_struct"
+description = "A better and simpler way to handle env."
+version = "0.1.0"
+edition = "2021"
+author = "Swarnim Arun <mail@swarnimarun.com>"
+license = "MIT"
+documentation = "https://docs.rs/env_struct"
+homepage = "https://github.com/swarnimarun/env_struct"
+repository = "https://github.com/swarnimarun/env_struct"
+keywords = ["env", "shell-environment"]
+categories = ["configuration"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
