@@ -154,11 +154,11 @@ mod tests {
             struct Env {
                 /// Hello World
                 hello_not_my_world = "hello".into(),
-                hello_some_world = "Hello, Some World!",
+                hello_some_world = "Hello, Some World!".into(),
             }
         }
         let env = Env::load_from_env();
-        assert_eq!(env.hello_not_my_world, hello_sam);
+        assert_eq!(env.hello_not_my_world, hello_world);
         assert_eq!(env.hello_some_world, "Hello, Some World!");
         drop(temp_env); // drop would be called without this as well
     }
