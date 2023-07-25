@@ -52,13 +52,19 @@ macro_rules! env_struct {
             pub fn load_from_env() -> Self {
                 let mut env = Self::default();
                 $(
-                    if let Ok(s) = std::env::var(
-                        stringify!($field)
+                    let _field = stringify!($field)
                             .chars()
                             .map(|x| char::to_ascii_uppercase(&x))
-                            .collect::<String>(),
-                    ) {
+                            .collect::<String>();
+                    if let Ok(s) = std::env::var(&_field) {
                         env.$field = s;
+                    } else {
+                        #[cfg(feature = "logging")]
+                        {
+                            use log;
+                            let def: String = $fieldDef;
+                            log::warn!("Failed to find `{}` in env, defaulting to {:?}", _field, def);
+                        }
                     }
                 )*
                 env
@@ -146,9 +152,7 @@ mod tests {
     #[test]
     fn test_with_default() {
         let hello_world = "Hello, world!";
-        let temp_env = [
-            EnvTemp::set_var("HELLO_NOT_MY_WORLD", hello_world),
-        ];
+        let temp_env = [EnvTemp::set_var("HELLO_NOT_MY_WORLD", hello_world)];
         env_struct! {
             /// Env Items
             struct Env {
@@ -189,9 +193,7 @@ mod tests {
     #[should_panic]
     fn test_no_defaults_failed() {
         let welp_sam = "Welp, Sam!";
-        let temp_env = [
-            EnvTemp::set_var("HELL_TO_WORLD", welp_sam)
-        ];
+        let temp_env = [EnvTemp::set_var("HELL_TO_WORLD", welp_sam)];
         env_struct! {
             struct Env {
                 hell_to_world,
