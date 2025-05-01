@@ -59,12 +59,7 @@ macro_rules! env_struct {
                     if let Ok(s) = std::env::var(&_field) {
                         env.$field = s;
                     } else {
-                        #[cfg(feature = "logging")]
-                        {
-                            use log;
-                            let def: String = $fieldDef;
-                            log::warn!("Failed to find `{}` in env, defaulting to {:?}", _field, def);
-                        }
+                        $crate::log()
                     }
                 )*
                 env
@@ -119,6 +114,19 @@ macro_rules! env_struct {
             }
         }
     };
+}
+
+#[cfg(not(feature = "logging"))]
+pub fn log() {}
+
+#[cfg(feature = "logging")]
+pub fn log(def: String) {
+    use log;
+    log::warn!(
+        "Failed to find `{}` in env, defaulting to {:?}",
+        _field,
+        def
+    );
 }
 
 #[cfg(test)]
